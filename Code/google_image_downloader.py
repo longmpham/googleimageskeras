@@ -58,23 +58,23 @@ import random
 
 
 # Globals (for now)
-get_images = True
+get_images = False
 image_dir = './downloads'
-categories = 'brown dog, cute cat'
+query = 'brown dog,cute cat'
 IMG_SIZE = 128
 
 init_method = 'glorot_uniform'
 input_shape = (128,128,1)
 first_layer_filter_size = 96
-dropout = 0.5
+dropout = 0.25
 num_classes = 2 
 learning_rate = 0.01
 momentum = 0.9
 learning_rate_decay = 0.0005
 batch_size = 32
 validation_split = 10
-loss_type = 'categorical_crossentropy'
-epochs = 10
+loss_type = 'binary_crossentropy'
+epochs = 30
 num_tests = 2
 
 ################## CREATE DATABASE ##################
@@ -84,7 +84,7 @@ def get_images():
 	response = google_images_download.googleimagesdownload()   #class instantiation
 
 	# Change your query, query size and file types. 
-	arguments = {'keywords':categories, # [item 1, item 2, item 3...]
+	arguments = {'keywords':query, # [item 1, item 2, item 3...]
 					'limit':100, # over 100 requires selenium / chromedriver (extra)
 					'format':'jpg',
 					'safe_search':True,
@@ -96,15 +96,20 @@ def get_images():
 #TODO: ALLOW USER TO AUGMENT OR NOT. (RECOMMENDED IF <100 IMAGES)
 def create_training_set():
 
+	categories = ['dog', 'cat']
+	# categories = query.split(',')
 	training_data = []
 	for category in categories:
 		path = os.path.join(image_dir, category)
 		class_num = categories.index(category)  # get the classification  (0 or a 1). 0=dog 1=cat
 		for img in os.listdir(path):
-			img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
-			new_img_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
-			training_data.append([new_img_array, class_num])
-
+			try:
+				img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
+				new_img_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+				training_data.append([new_img_array, class_num])
+			
+			except Exception as e:  # in the interest in keeping the output clean...
+				pass
 			#plt.imshow(new_img_array, cmap='gray')
 			#plt.show()
 	# print(training_data)
@@ -191,9 +196,9 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
 
 def main():
 
-	if(get_images):
-		get_images()
-		exit()
+	# if(get_images):
+	# 	get_images()
+	# 	exit()
 
 	# Load Images
 	print('Creating Dataset...')
