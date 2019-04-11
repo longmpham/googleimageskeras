@@ -31,6 +31,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Activation, Dropout, Flatten
 from keras.layers.normalization import BatchNormalization
 from keras.optimizers import sgd
+from keras.optimizers import Adam
 from keras import backend as K
 import keras
 
@@ -45,8 +46,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-
-
+# TensorBoard
+from tensorflow.keras.callbacks import TensorBoard
+import tensorflow as tf
 
 # Globals (for now)
 get_images = False
@@ -57,16 +59,16 @@ IMG_SIZE = 128
 init_method = 'glorot_uniform'
 input_shape = (IMG_SIZE,IMG_SIZE,1)
 first_layer_filter_size = 32
-dropout = 0.25
+dropout = 0.5
 num_classes = 2 
 learning_rate = 0.05
 momentum = 0.9
 learning_rate_decay = 0.0005
 batch_size = 16
-validation_split = 0.1
+validation_split = 0.2
 loss_type = 'binary_crossentropy'
 epochs = 100
-num_tests = 3
+num_tests = 1
 
 ################## CREATE DATABASE ##################
 #TODO: ALLOW USER TO INPUT DATA OR NOT. IF SO, WHAT TYPE? FILL IN KEYWORDS
@@ -187,11 +189,13 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
 
 
 def evaluate_model(model):
+	# test data
+	# save data?
+
 	return
 
 def plot_data(model, count):
 	# save the data per epoch
-	training_time = training_time
 	loss = model.history['loss']
 	accuracy = model.history['acc']
 	validation_loss = model.history['val_loss']
@@ -207,7 +211,7 @@ def plot_data(model, count):
 	ax.set_ylabel('Accuracy (%)')
 	ax.legend()
 	plt.ylim(bottom=0)
-	plt.savefig(count+ '_accuracy' + '.png')
+	plt.savefig(str(count) + '_accuracy' + '.png')
 	plt.close()
 
     # plot the loss
@@ -219,7 +223,7 @@ def plot_data(model, count):
 	ax.set_ylabel('Loss (%)')
 	ax.legend()
 	plt.ylim(bottom=0)
-	plt.savefig(count + '_loss' + '.png')
+	plt.savefig(str(count) + '_loss' + '.png')
 	plt.close()
 
 
@@ -228,6 +232,9 @@ def main():
 	# if(get_images):
 	# 	get_images()
 	# 	exit()
+
+	NAME = "Cats-vs-dogs-CNN"
+	tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
 
 	# Load Images
 	print('Creating Dataset...')
@@ -239,8 +246,11 @@ def main():
 	
 	# Compile uniform model
 	print('Compiling model(s)...')
-	optimizer = sgd(learning_rate, momentum, learning_rate_decay)
+	#optimizer = sgd(learning_rate, momentum, learning_rate_decay)
+	# optimizer = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+	# tf.global_variables_initializer()
 	model.compile(optimizer='adam', loss=loss_type, metrics=['accuracy'])
+
 
 
 	for i in range(num_tests):
@@ -250,9 +260,8 @@ def main():
 					batch_size=batch_size,
 					epochs=epochs,
 					validation_split=validation_split,
-					shuffle=True)
-
-			print(history)
+					shuffle=True)#,
+					#callbacks=[tensorboard])
 
 			# Evaluate Model
 			print('Evaluating model(s)...')
