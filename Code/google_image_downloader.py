@@ -68,35 +68,38 @@ IMG_SIZE = 128
 ################## CREATE DATABASE ##################
 #TODO: ALLOW USER TO INPUT DATA OR NOT. IF SO, WHAT TYPE? FILL IN KEYWORDS
 
-if(get_images):
-	response = google_images_download.googleimagesdownload()   #class instantiation
+def get_images():
+	if(get_images):
+		response = google_images_download.googleimagesdownload()   #class instantiation
 
-	# Change your query, query size and file types. 
-	arguments = {'keywords':categories, # [item 1, item 2, item 3...]
-					'limit':100, # over 100 requires selenium / chromedriver (extra)
-					'format':'jpg',
-					'safe_search':True,
-					}   
-	paths = response.download(arguments)   #passing the arguments to the function
-	# print(paths)   #printing absolute paths of the downloaded images
+		# Change your query, query size and file types. 
+		arguments = {'keywords':categories, # [item 1, item 2, item 3...]
+						'limit':100, # over 100 requires selenium / chromedriver (extra)
+						'format':'jpg',
+						'safe_search':True,
+						}   
+		paths = response.download(arguments)   #passing the arguments to the function
+		# print(paths)   #printing absolute paths of the downloaded images
 
 
 ################## AUGMENT IMAGES ##################
 #TODO: ALLOW USER TO AUGMENT OR NOT. (RECOMMENDED IF <100 IMAGES)
 
+training_data = []
+# def normalize_data():
+for category in categories:
+	path = os.path.join(image_dir, category)
+	class_num = categories.index(category)  # get the classification  (0 or a 1). 0=dog 1=cat
+	for img in os.listdir(path):
+		img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
+		new_img_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+		training_data.append([new_img_array, class_num])
+		print(len(training_data))
 
-def normalize_data():
-	for category in categories:
-		path = os.path.join(image_dir, category)
-		class_num = categories.index(category)  # get the classification  (0 or a 1). 0=dog 1=cat
-		for img in os.listdir(path):
-			img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
-			new_img_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
-			training_data.append([new_array, class_num])
-
-			#plt.imshow(new_img_array, cmap='gray')
-			#plt.show()
-
+		#plt.imshow(new_img_array, cmap='gray')
+		#plt.show()
+inputd=input()
+exit()
 
 ################## KERAS ENVIRONMENT ##################
 
@@ -187,3 +190,7 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
 
     return model
 
+
+
+# def main():
+# 	normalize_data()
