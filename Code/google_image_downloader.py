@@ -45,10 +45,11 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from time import time
 
 # TensorBoard
-from tensorflow.keras.callbacks import TensorBoard
-import tensorflow as tf
+# from tensorflow.keras.callbacks import TensorBoard
+# import tensorflow as tf
 
 # Globals (for now)
 get_images = False
@@ -67,8 +68,8 @@ learning_rate_decay = 0.0005
 batch_size = 16
 validation_split = 0.2
 loss_type = 'binary_crossentropy'
-epochs = 100
-num_tests = 1
+epochs = 50
+num_tests = 2
 
 ################## CREATE DATABASE ##################
 #TODO: ALLOW USER TO INPUT DATA OR NOT. IF SO, WHAT TYPE? FILL IN KEYWORDS
@@ -188,20 +189,21 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
     return model
 
 
-def evaluate_model(model):
+def evaluate_model(history):
 	# test data
 	# save data?
 
 	return
 
-def plot_data(model, count):
+def plot_data(history, count):
 	# save the data per epoch
-	loss = model.history['loss']
-	accuracy = model.history['acc']
-	validation_loss = model.history['val_loss']
-	validation_accuracy = model.history['val_acc']
-	epochs = range(1,len(model.history['acc']) + 1)
+	loss = history.history['loss']
+	accuracy = history.history['acc']
+	validation_loss = history.history['val_loss']
+	validation_accuracy = history.history['val_acc']
+	epochs = range(1,len(history.history['acc']) + 1)
 
+	print('Printing Accuracy and Loss...')
 	# plot the accuracy
 	figure, ax = plt.subplots()
 	ax.plot(epochs, accuracy, '-b', label='training accuracy')
@@ -233,9 +235,6 @@ def main():
 	# 	get_images()
 	# 	exit()
 
-	NAME = "Cats-vs-dogs-CNN"
-	tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
-
 	# Load Images
 	print('Creating Dataset...')
 	images, labels = create_training_set()
@@ -246,9 +245,11 @@ def main():
 	
 	# Compile uniform model
 	print('Compiling model(s)...')
+	
 	#optimizer = sgd(learning_rate, momentum, learning_rate_decay)
 	# optimizer = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 	# tf.global_variables_initializer()
+
 	model.compile(optimizer='adam', loss=loss_type, metrics=['accuracy'])
 
 
