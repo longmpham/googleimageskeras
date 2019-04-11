@@ -58,9 +58,9 @@ import random
 
 
 # Globals (for now)
-get_images = False
+get_images = True
 image_dir = './downloads'
-categories = ['dog','cat']
+categories = 'brown dog, cute cat'
 IMG_SIZE = 128
 
 init_method = 'glorot_uniform'
@@ -81,18 +81,16 @@ num_tests = 2
 #TODO: ALLOW USER TO INPUT DATA OR NOT. IF SO, WHAT TYPE? FILL IN KEYWORDS
 
 def get_images():
-	if(get_images):
-		response = google_images_download.googleimagesdownload()   #class instantiation
+	response = google_images_download.googleimagesdownload()   #class instantiation
 
-		# Change your query, query size and file types. 
-		arguments = {'keywords':categories, # [item 1, item 2, item 3...]
-						'limit':100, # over 100 requires selenium / chromedriver (extra)
-						'format':'jpg',
-						'safe_search':True,
-						}   
-		paths = response.download(arguments)   #passing the arguments to the function
-		# print(paths)   #printing absolute paths of the downloaded images
-
+	# Change your query, query size and file types. 
+	arguments = {'keywords':categories, # [item 1, item 2, item 3...]
+					'limit':100, # over 100 requires selenium / chromedriver (extra)
+					'format':'jpg',
+					'safe_search':True,
+					}   
+	paths = response.download(arguments)   #passing the arguments to the function
+	# print(paths)   #printing absolute paths of the downloaded images
 
 ################## PRE-PROCESS IMAGES ##################
 #TODO: ALLOW USER TO AUGMENT OR NOT. (RECOMMENDED IF <100 IMAGES)
@@ -192,6 +190,10 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
     return model
 
 def main():
+
+	if(get_images):
+		get_images()
+		exit()
 
 	# Load Images
 	print('Creating Dataset...')
