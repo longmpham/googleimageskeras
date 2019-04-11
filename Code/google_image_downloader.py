@@ -71,11 +71,11 @@ num_classes = 2
 learning_rate = 0.01
 momentum = 0.9
 learning_rate_decay = 0.0005
-batch_size = 32
+batch_size = 8
 validation_split = 10
 loss_type = 'binary_crossentropy'
-epochs = 30
-num_tests = 2
+epochs = 500
+num_tests = 3
 
 ################## CREATE DATABASE ##################
 #TODO: ALLOW USER TO INPUT DATA OR NOT. IF SO, WHAT TYPE? FILL IN KEYWORDS
@@ -222,6 +222,8 @@ def main():
 					epochs=epochs,
 					validation_split=validation_split,
 					shuffle=True)
+
+			print(history)
 
 			# Evaluate Model
 			print('Evaluating model(s)...')
