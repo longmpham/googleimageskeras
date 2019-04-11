@@ -10,15 +10,6 @@
 #
 ###############
 
-
-# Import Libraries
-
-
-
-
-
-
-
 ####################################################################
 # 
 # Using this python project "google image downloader", 
@@ -64,17 +55,17 @@ query = 'brown dog,cute cat'
 IMG_SIZE = 128
 
 init_method = 'glorot_uniform'
-input_shape = (128,128,1)
-first_layer_filter_size = 96
+input_shape = (IMG_SIZE,IMG_SIZE,1)
+first_layer_filter_size = 32
 dropout = 0.25
 num_classes = 2 
-learning_rate = 0.01
+learning_rate = 0.05
 momentum = 0.9
 learning_rate_decay = 0.0005
-batch_size = 8
-validation_split = 10
+batch_size = 16
+validation_split = 0.1
 loss_type = 'binary_crossentropy'
-epochs = 500
+epochs = 100
 num_tests = 3
 
 ################## CREATE DATABASE ##################
@@ -156,31 +147,31 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
                      bias_initializer='zeros'))
     model.add(Activation('relu'))
               
-    # Convolution Layer 4
-    model.add(Conv2D(192, kernel_size=(1,1), padding='same',
-                     kernel_initializer='glorot_uniform', 
-                     bias_initializer='zeros'))
-    model.add(Activation('relu'))
+    # # Convolution Layer 4
+    # model.add(Conv2D(192, kernel_size=(1,1), padding='same',
+    #                  kernel_initializer='glorot_uniform', 
+    #                  bias_initializer='zeros'))
+    # model.add(Activation('relu'))
     
-    model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
+    # model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
     
-    # Convolution Layer 5
-    model.add(Conv2D(192, kernel_size=(3,3), padding='same',
-                     kernel_initializer='glorot_uniform', 
-                     bias_initializer='zeros'))
-    model.add(Activation('relu'))
+    # # Convolution Layer 5
+    # model.add(Conv2D(192, kernel_size=(3,3), padding='same',
+    #                  kernel_initializer='glorot_uniform', 
+    #                  bias_initializer='zeros'))
+    # model.add(Activation('relu'))
     
-    # Convolution Layer 6
-    model.add(Conv2D(192, kernel_size=(1,1), padding='same',
-                     kernel_initializer='glorot_uniform', 
-                     bias_initializer='zeros'))
-    model.add(Activation('relu'))
+    # # Convolution Layer 6
+    # model.add(Conv2D(192, kernel_size=(1,1), padding='same',
+    #                  kernel_initializer='glorot_uniform', 
+    #                  bias_initializer='zeros'))
+    # model.add(Activation('relu'))
     
-    # Convolution Layer 7
-    model.add(Conv2D(10, kernel_size=(1,1), padding='same',
-                     kernel_initializer='glorot_uniform', 
-                     bias_initializer='zeros'))
-    model.add(Activation('relu'))
+    # # Convolution Layer 7
+    # model.add(Conv2D(10, kernel_size=(1,1), padding='same',
+    #                  kernel_initializer='glorot_uniform', 
+    #                  bias_initializer='zeros'))
+    # model.add(Activation('relu'))
     
     model.add(AveragePooling2D(pool_size=(6,6)))
     
@@ -193,6 +184,44 @@ def build_model(init_method, input_shape, first_layer_filter_size, dropout, num_
     model.add(Activation('softmax'))
 
     return model
+
+
+def evaluate_model(model):
+	return
+
+def plot_data(model, count):
+	# save the data per epoch
+	training_time = training_time
+	loss = model.history['loss']
+	accuracy = model.history['acc']
+	validation_loss = model.history['val_loss']
+	validation_accuracy = model.history['val_acc']
+	epochs = range(1,len(model.history['acc']) + 1)
+
+	# plot the accuracy
+	figure, ax = plt.subplots()
+	ax.plot(epochs, accuracy, '-b', label='training accuracy')
+	ax.plot(epochs, validation_accuracy, '-r', label='validation accuracy')
+	ax.set_title('Training Accuracy and Validation Accuracy')
+	ax.set_xlabel('Epochs (#)')
+	ax.set_ylabel('Accuracy (%)')
+	ax.legend()
+	plt.ylim(bottom=0)
+	plt.savefig(count+ '_accuracy' + '.png')
+	plt.close()
+
+    # plot the loss
+	figure, ax = plt.subplots()
+	ax.plot(epochs, loss, '-b', label='training loss')
+	ax.plot(epochs, validation_loss, '-m', label='validation loss')
+	ax.set_title('Training Loss and Validation Loss')
+	ax.set_xlabel('Epochs (#)')
+	ax.set_ylabel('Loss (%)')
+	ax.legend()
+	plt.ylim(bottom=0)
+	plt.savefig(count + '_loss' + '.png')
+	plt.close()
+
 
 def main():
 
@@ -211,7 +240,7 @@ def main():
 	# Compile uniform model
 	print('Compiling model(s)...')
 	optimizer = sgd(learning_rate, momentum, learning_rate_decay)
-	model.compile(optimizer=optimizer, loss=loss_type, metrics=['accuracy'])
+	model.compile(optimizer='adam', loss=loss_type, metrics=['accuracy'])
 
 
 	for i in range(num_tests):
@@ -227,7 +256,11 @@ def main():
 
 			# Evaluate Model
 			print('Evaluating model(s)...')
-			# score = model.evaluate(x_test, y_test)
+			evaluate_model(history)
+
+			# Plot Model
+			plot_data(history, i)
+
 
 
 		except KeyboardInterrupt:
